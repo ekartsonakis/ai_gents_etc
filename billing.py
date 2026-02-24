@@ -66,8 +66,8 @@ def extract_due_date(text: str) -> Optional[str]:
     # Greek date patterns
     patterns = [
         # Λήξη προθεσμίας, Ημερομηνία λήξης
-        r"(?:Λήξη|Ημερομηνία λήξης|Προθεσμία πληρωμής)[:\s]*(\d{1,2}[/.-]\d{2}[/.-,4})",
-]\d{2        # Standard date formats
+        r"(?:Λήξη|Ημερομηνία λήξης|Προθεσμία πληρωμής)[:\s]*(\d{1,2}[/.-]\d{2}[/.-]\d{2,4})",
+        # Standard date formats
         r"(\d{1,2}[/.-]\d{2}[/.-]\d{2,4})",
     ]
 
