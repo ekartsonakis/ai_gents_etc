@@ -1,4 +1,4 @@
-# OpenClaw Agent: Monthly Cheapest Electricity Provider (Greece) + Bills via Gmail
+EnerSave Greece: Monthly Cheapest Electricity Provider (Greece) + Bills via Gmail
 
 ## Goal
 Every month, find the electricity provider/plan in **Greece** with the **lowest expected total cost** for my consumption (including all provider discounts and plan conditions), and help me switch/enroll there.
@@ -223,3 +223,418 @@ Stop and ask the user if:
 ## Scope Limits
 - Do not provide legal advice; summarize terms/risks so the user can decide.
 - If a step requires personal signature/intent, pause and let the user complete it.
+
+# Greece Electricity Optimizer + Gmail Bill Assistant
+
+Production-grade architecture and implementation blueprint for an app that:
+
+- Finds the **cheapest electricity provider in Greece every month**
+- Monitors **Gmail for electricity bills**
+- Validates bills
+- Assists with **secure payment via prepaid card**
+- Enforces **strict user consent gates**
+
+Uses a **real browser with JavaScript enabled** and **user-driven authentication**.
+
+---
+
+# Compliance With Greek Electricity Market
+
+Official regulator source:
+
+- :contentReference[oaicite:0]{index=0}
+
+Major providers include:
+
+- :contentReference[oaicite:1]{index=1}
+- :contentReference[oaicite:2]{index=2}
+- :contentReference[oaicite:3]{index=3}
+- :contentReference[oaicite:4]{index=4}
+- :contentReference[oaicite:5]{index=5}
+- :contentReference[oaicite:6]{index=6}
+
+---
+
+# System Architecture
+
+
+User
+│
+▼
+Control App (FastAPI)
+│
+├── Playwright Browser
+│ ├── Gmail
+│ ├── Provider sites
+│ └── Payment portals
+│
+├── Memory Store (SQLite)
+│
+└── Scheduler
+
+
+---
+
+# Technology Stack
+
+## Backend
+
+- Python 3.12
+- FastAPI
+
+## Browser Automation
+
+- Playwright (Chromium)
+- JavaScript enabled
+- Supports manual login and 2FA
+
+## Storage
+
+- SQLite
+
+## PDF Parsing
+
+- pdfplumber
+
+## Scheduler
+
+- APScheduler
+
+---
+
+# Project Structure
+
+
+electricity-agent/
+│
+├── main.py
+├── browser.py
+├── gmail.py
+├── providers.py
+├── billing.py
+├── calculator.py
+├── memory.py
+├── scheduler.py
+│
+├── requirements.txt
+└── db.sqlite
+
+
+---
+
+# Installation
+
+## Install dependencies
+
+bash
+pip install fastapi playwright pdfplumber apscheduler uvicorn
+
+Install browser:
+
+playwright install chromium
+Core Modules
+Browser Engine
+
+browser.py
+
+from playwright.sync_api import sync_playwright
+
+class Browser:
+
+    def __init__(self):
+
+        self.playwright = sync_playwright().start()
+
+        self.browser = self.playwright.chromium.launch(
+            headless=False
+        )
+
+        self.context = self.browser.new_context()
+
+        self.page = self.context.new_page()
+
+    def open(self, url):
+
+        self.page.goto(url)
+
+    def close(self):
+
+        self.browser.close()
+Secure Memory Store
+
+memory.py
+
+import sqlite3
+
+conn = sqlite3.connect("db.sqlite")
+
+def save_user(data):
+
+    conn.execute(
+        "INSERT INTO user_profile VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        data
+    )
+
+    conn.commit()
+
+Database schema:
+
+CREATE TABLE user_profile (
+ id INTEGER PRIMARY KEY,
+ full_name TEXT,
+ afm TEXT,
+ supply_number TEXT,
+ address TEXT,
+ meter_type TEXT,
+ day_split REAL,
+ night_split REAL,
+ email TEXT,
+ phone TEXT
+);
+
+CREATE TABLE preferences (
+ fixed_only BOOLEAN,
+ max_contract_months INTEGER,
+ max_exit_fee REAL
+);
+
+CREATE TABLE audit_log (
+ date TEXT,
+ action TEXT,
+ provider TEXT,
+ amount REAL,
+ receipt TEXT
+);
+Gmail Bill Monitor
+
+gmail.py
+
+def open_gmail(browser):
+
+    browser.open("https://mail.google.com")
+
+    input("Login manually and press ENTER")
+
+Search bills:
+
+def search_bills(page):
+
+    page.fill(
+        "input[name='q']",
+        "subject:(λογαριασμός OR bill OR invoice) electricity"
+    )
+
+    page.keyboard.press("Enter")
+Bill Parser
+
+billing.py
+
+import pdfplumber
+
+def parse_bill(path):
+
+    with pdfplumber.open(path) as pdf:
+
+        text = pdf.pages[0].extract_text()
+
+    return text
+
+Extract:
+
+amount
+
+due date
+
+provider
+
+payment reference
+
+Provider Scraper
+
+providers.py
+
+def scrape_dei(browser):
+
+    browser.open("https://www.dei.gr")
+
+    plans = []
+
+    return plans
+Cost Calculator
+
+calculator.py
+
+def calculate(plan, kwh):
+
+    energy = kwh * plan["price"]
+
+    total = energy + plan["base_fee"] - plan["discount"]
+
+    return total
+Recommendation Engine
+plans.sort(key=lambda x: x.total)
+
+best = plans[:3]
+Enrollment Workflow
+
+STOP before final submit.
+
+Require:
+
+CONFIRM ENROLL
+
+Example:
+
+def require_enroll_confirm():
+
+    confirm = input()
+
+    if confirm != "CONFIRM ENROLL":
+
+        raise Exception("Enrollment cancelled")
+Bill Payment Workflow
+
+STOP before payment.
+
+Require:
+
+CONFIRM PAY
+
+Example:
+
+def require_payment_confirm():
+
+    confirm = input()
+
+    if confirm != "CONFIRM PAY":
+
+        raise Exception("Payment cancelled")
+Scheduler
+
+scheduler.py
+
+from apscheduler.schedulers.blocking import BlockingScheduler
+
+scheduler = BlockingScheduler()
+
+scheduler.add_job(compare_providers, 'cron', day=1)
+
+scheduler.start()
+Gmail Payment Flow
+
+Workflow:
+
+1 Open Gmail
+2 User logs in manually
+3 Find electricity bill
+4 Extract amount
+5 Ask user to top up prepaid card
+6 Navigate to provider payment portal
+7 STOP
+8 Wait for:
+
+CONFIRM PAY
+Monthly Provider Comparison Flow
+
+Workflow:
+
+1 Open regulator site
+2 Collect providers
+3 Scrape plans
+4 Calculate expected cost
+5 Show best 3
+6 Ask approval
+7 STOP
+8 Wait for:
+
+CONFIRM ENROLL
+Security Model
+
+Never stores:
+
+passwords
+
+CVV
+
+card numbers
+
+OTP
+
+User enters credentials manually in browser.
+
+Minimal CLI Interface
+
+main.py
+
+print("1 Compare providers")
+
+print("2 Check Gmail")
+
+print("3 Exit")
+
+choice = input()
+Audit Log
+
+Example record:
+
+2026-02-01
+COMPARE
+DEI
+Plan X
+
+Payment example:
+
+2026-02-10
+PAYMENT
+Protergia
+€87
+Receipt ID 1234
+Deployment Options
+
+Recommended:
+
+Local PC
+
+Home server
+
+Raspberry Pi
+
+Future Improvements
+
+Optional:
+
+Web dashboard
+
+Mobile app
+
+Automatic PDF archive
+
+Notifications
+
+AI prediction of price trends
+
+User Consent Enforcement
+
+Critical safety gates:
+
+Enrollment requires:
+
+CONFIRM ENROLL
+
+Payment requires:
+
+CONFIRM PAY
+
+No exceptions.
+
+Ready For Integration
+
+This blueprint can be added directly to your GitHub repository and implemented incrementally.
+
+Start implementation from:
+
+browser.py
+memory.py
+providers.py
+billing.py
+main.py
