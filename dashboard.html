@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnerSave Greece - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header .logo {
+            font-size: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2a5298;
+        }
+
+        .btn-secondary {
+            background: #e0e7ff;
+            color: #1e3c72;
+        }
+
+        .btn-secondary:hover {
+            background: #c7d2fe;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e3c72;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .plan-list {
+            list-style: none;
+        }
+
+        .plan-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+
+        .plan-item:hover {
+            background: #f8fafc;
+        }
+
+        .plan-item:last-child {
+            border-bottom: none;
+        }
+
+        .plan-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .plan-info span {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .plan-cost {
+            text-align: right;
+        }
+
+        .plan-cost .price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .plan-cost .unit {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .tag-fixed {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .tag-variable {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .tag-discount {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            font-weight: 600;
+            color: #1e3c72;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        td {
+            font-size: 0.9rem;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1e3c72;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: #f0f0f0;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .tab.active {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1e3c72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: #10b981;
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .history-chart {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 1rem 0;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(to top, #1e3c72, #2a5298);
+            border-radius: 4px 4px 0 0;
+            min-height: 20px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .bar:hover {
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1e3c72;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e3c72;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #1e3c72;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: white;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-size: 0.95rem;
+            color: #666;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+        }
+
+        .nav-tab.active {
+            background: #1e3c72;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>
+            <span class="logo">⚡</span>
+            EnerSave Greece
+        </h1>
+    </header>
+
+    <div class="container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="dashboard">Dashboard</button>
+            <button class="nav-tab" data-tab="history">History</button>
+            <button class="nav-tab" data-tab="settings">Settings</button>
+            <button class="nav-tab" data-tab="audit">Audit Log</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div class="tab-content active" id="dashboard">
+            <div class="grid">
+                <!-- Quick Stats -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Quick Stats</span>
+                        <button class="btn btn-primary" onclick="runComparison()">Refresh</button>
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat">
+                            <div class="stat-value" id="avg-consumption">-</div>
+                            <div class="stat-label">Avg kWh/Month</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="current-provider">-</div>
+                            <div class="stat-label">Current Provider</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="best-price">-</div>
+                            <div class="stat-label">Best Price (€)</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value" id="potential-savings">-</div>
+                            <div class="stat-label">Potential Savings</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Recommendations -->
+                <div class="card full-width">
+                    <div class="card-header">
+                        <span class="card-title">Top Recommended Plans</span>
+                    </div>
+                    <div id="plans-container">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div class="tab-content" id="history">
+            <div class="grid">
+                <div class="card full-width">
+                    <div class="card-header">
+                        <span class="card-title">Monthly Consumption History</span>
+                        <button class="btn btn-secondary" onclick="showAddHistoryModal()">+ Add Month</button>
+                    </div>
+                    <div class="history-chart" id="history-chart">
+                        <div class="loading"><div class="spinner"></div></div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th>Total kWh</th>
+                                <th>Day kWh</th>
+                                <th>Night kWh</th>
+                                <th>Provider</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-content" id="settings">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Profile Information</span>
+                    </div>
+                    <form id="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name</label>
+                                <input type="text" id="full-name" placeholder="Your full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email" placeholder="your@email.com">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Supply Number (Μισθωτήριο)</label>
+                                <input type="text" id="supply-number" placeholder="123456789">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone</label>
+                                <input type="tel" id="phone" placeholder="+30 690 0000000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Supply Address</label>
+                            <input type="text" id="address" placeholder="Your supply address">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Meter Type</label>
+                                <select id="meter-type">
+                                    <option value="single">Single Tariff</option>
+                                    <option value="dual">Day/Night (Dual)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Day Usage %</label>
+                                <input type="number" id="day-split" min="0" max="1" step="0.1" value="0.7">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Profile</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">Preferences</span>
+                    </div>
+                    <form id="preferences-form">
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="fixed-only"> Prefer Fixed-Rate Plans Only
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Contract Length (months)</label>
+                            <select id="max-contract">
+                                <option value="0">No contract</option>
+                                <option value="12">12 months</option>
+                                <option value="24">24 months</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Exit Fee (€)</label>
+                            <input type="number" id="max-exit-fee" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="ebill-only"> Prefer E-Bill/Online Only
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Preferences</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audit Tab -->
+        <div class="tab-content" id="audit">
+            <div class="card full-width">
+                <div class="card-header">
+                    <span class="card-title">Audit Log</span>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Action</th>
+                            <th>Provider</th>
+                            <th>Plan</th>
+                            <th>Amount</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-table">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Saved successfully!</div>
+
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+
+                // Load data for the tab
+                if (tab.dataset.tab === 'history') loadHistory();
+                if (tab.dataset.tab === 'audit') loadAudit();
+                if (tab.dataset.tab === 'settings') loadProfile();
+            });
+        });
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // API helper
+        async function apiCall(url, options = {}) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error('API error');
+                return await response.json();
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+
+        // Load Dashboard
+        async function loadDashboard() {
+            const data = await apiCall('/api/comparison');
+            if (!data) return;
+
+            // Update stats
+            document.getElementById('avg-consumption').textContent = Math.round(data.consumption.total);
+            document.getElementById('best-price').textContent = '€' + data.top_plans[0]?.expected_monthly_cost.toFixed(2);
+
+            // Calculate potential savings (compare top vs worst)
+            const worst = data.all_plans[data.all_plans.length - 1];
+            const savings = worst ? (worst.expected_monthly_cost - data.top_plans[0].expected_monthly_cost).toFixed(2) : 0;
+            document.getElementById('potential-savings').textContent = '€' + savings + '/mo';
+
+            // Get current provider from profile
+            const profile = await apiCall('/api/profile');
+            document.getElementById('current-provider').textContent = profile?.supply_number ? 'Profile Set' : 'Not Set';
+
+            // Render plans
+            const container = document.getElementById('plans-container');
+            container.innerHTML = '<ul class="plan-list">' +
+                data.top_plans.map((plan, i) => `
+                    <li class="plan-item">
+                        <div class="plan-info">
+                            <h4>${plan.plan.provider} - ${plan.plan.name}</h4>
+                            <span>
+                                <span class="tag tag-${plan.plan.type}">${plan.plan.type}</span>
+                                ${plan.plan.discount_percent ? `<span class="tag tag-discount">-${plan.plan.discount_percent}%</span>` : ''}
+                                ${plan.plan.contract_months ? `${plan.plan.contract_months}mo contract` : 'No contract'}
+                            </span>
+                        </div>
+                        <div class="plan-cost">
+                            <div class="price">€${plan.expected_monthly_cost.toFixed(2)}</div>
+                            <div class="unit">/month</div>
+                        </div>
+                    </li>
+                `).join('') + '</ul>';
+        }
+
+        // Run comparison
+        async function runComparison() {
+            const container = document.getElementById('plans-container');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+            await loadDashboard();
+            showToast('Comparison updated!');
+        }
+
+        // Load History
+        async function loadHistory() {
+            const history = await apiCall('/api/history');
+            if (!history) return;
+
+            const table = document.getElementById('history-table');
+            const chart = document.getElementById('history-chart');
+
+            if (history.length === 0) {
+                table.innerHTML = '<tr><td colspan="5" class="empty-state">No consumption history yet</td></tr>';
+                chart.innerHTML = '<div class="empty-state">No data to display</div>';
+                return;
+            }
+
+            // Sort by date
+            history.sort((a, b) => new Date(b.year + '-' + b.month) - new Date(a.year + '-' + a.month));
+
+            // Render table
+            table.innerHTML = history.map(h => `
+                <tr>
+                    <td>${h.month}/${h.year}</td>
+                    <td>${h.total_kwh.toFixed(0)}</td>
+                    <td>${h.day_kwh?.toFixed(0) || '-'}</td>
+                    <td>${h.night_kwh?.toFixed(0) || '-'}</td>
+                    <td>${h.provider || '-'}</td>
+                </tr>
+            `).join('');
+
+            // Render chart (last 12 months)
+            const maxKwh = Math.max(...history.map(h => h.total_kwh));
+            chart.innerHTML = history.slice(0, 12).reverse().map(h => `
+                <div class="bar" style="height: ${(h.total_kwh / maxKwh) * 180}px">
+                    <span class="bar-value">${h.total_kwh.toFixed(0)}</span>
+                    <span class="bar-label">${h.month}</span>
+                </div>
+            `).join('');
+        }
+
+        // Load Profile
+        async function loadProfile() {
+            const profile = await apiCall('/api/profile');
+            const prefs = await apiCall('/api/preferences');
+
+            if (profile) {
+                document.getElementById('full-name').value = profile.full_name || '';
+                document.getElementById('email').value = profile.email || '';
+                document.getElementById('supply-number').value = profile.supply_number || '';
+                document.getElementById('phone').value = profile.phone || '';
+                document.getElementById('address').value = profile.address || '';
+                document.getElementById('meter-type').value = profile.meter_type || 'single';
+                document.getElementById('day-split').value = profile.day_split || 0.7;
+            }
+
+            if (prefs) {
+                document.getElementById('fixed-only').checked = prefs.fixed_only;
+                document.getElementById('max-contract').value = prefs.max_contract_months || 24;
+                document.getElementById('max-exit-fee').value = prefs.max_exit_fee || 0;
+                document.getElementById('ebill-only').checked = prefs.ebill_only;
+            }
+        }
+
+        // Save Profile
+        document.getElementById('profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                full_name: document.getElementById('full-name').value,
+                email: document.getElementById('email').value,
+                supply_number: document.getElementById('supply-number').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+                meter_type: document.getElementById('meter-type').value,
+                day_split: parseFloat(document.getElementById('day-split').value),
+                night_split: 1 - parseFloat(document.getElementById('day-split').value),
+            };
+            await apiCall('/api/profile', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            showToast('Profile saved!');
+        });
+
+        // Save Preferences
+        document.getElementById('preferences-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const data = {
+                fixed_only: document.getElementById('fixed-only').checked,
+                max_contract_months: parseInt(document.getElementById('max-contract').value),
+                max_exit_fee: parseFloat(document.getElementById('max-exit-fee').value),
+                ebill_only: document.getElementById('ebill-only').checked,
+            };
+            await apiCall('/api/preferences', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(data) });
+            showToast('Preferences saved!');
+        });
+
+        // Load Audit
+        async function loadAudit() {
+            const logs = await apiCall('/api/audit');
+            if (!logs) return;
+
+            const table = document.getElementById('audit-table');
+
+            if (logs.length === 0) {
+                table.innerHTML = '<tr><td colspan="6" class="empty-state">No audit entries yet</td></tr>';
+                return;
+            }
+
+            table.innerHTML = logs.map(log => `
+                <tr>
+                    <td>${new Date(log.date).toLocaleDateString()}</td>
+                    <td><span class="badge badge-${log.action === 'COMPARE' ? 'info' : log.action.includes('ERROR') ? 'warning' : 'success'}">${log.action}</span></td>
+                    <td>${log.provider || '-'}</td>
+                    <td>${log.plan_name || '-'}</td>
+                    <td>${log.amount ? '€' + log.amount.toFixed(2) : '-'}</td>
+                    <td>${log.details || '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Show add history modal
+        function showAddHistoryModal() {
+            const month = prompt('Month (1-12):');
+            if (!month) return;
+            const year = prompt('Year (e.g., 2026):');
+            if (!year) return;
+            const kwh = prompt('Total kWh:');
+            if (!kwh) return;
+
+            apiCall('/api/history', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    month: month,
+                    year: parseInt(year),
+                    total_kwh: parseFloat(kwh),
+                    day_kwh: parseFloat(kwh) * 0.7,
+                    night_kwh: parseFloat(kwh) * 0.3
+                })
+            }).then(() => {
+                showToast('History added!');
+                loadHistory();
+            });
+        }
+
+        // Initial load
+        loadDashboard();
+    </script>
+</body>
+</html>
