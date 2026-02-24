@@ -659,9 +659,11 @@
         }
 
         // API helper
+        const API_BASE = 'http://localhost:8040';
+
         async function apiCall(url, options = {}) {
             try {
-                const response = await fetch(url, options);
+                const response = await fetch(API_BASE + url, options);
                 if (!response.ok) throw new Error('API error');
                 return await response.json();
             } catch (error) {
