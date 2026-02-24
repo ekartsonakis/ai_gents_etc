@@ -1,0 +1,5 @@
+fastapi
+playwright
+pdfplumber
+apscheduler
+uvicorn
